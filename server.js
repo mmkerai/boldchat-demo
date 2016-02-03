@@ -188,8 +188,6 @@ app.post('/operator-status-changed', function(req, res){
 
 app.post('/chat-window-closed', function(req, res){ 
 	debugLog("*****chat window closed",req.body);
-//	if(ApiDataNotReady == 0)		//make sure all static data has been obtained first
-//		processOperatorStatusChanged(req.body);
 	res.send({ "result": "success" });
 });
 
@@ -342,7 +340,7 @@ function doStartOfDay() {
 	sleep(1000);
 	getApiData("getFolders", "FolderType=5", foldersCallback);	// get only chat folders
 	sleep(1000);
-	getOperatorAvailabilityData();
+//	getOperatorAvailabilityData();
 //	getInactiveChatData();
 //	getActiveChatData();
 //	calculateInactiveConc();		// concurrency for all closed/inactive chats
