@@ -334,10 +334,10 @@ function doStartOfDay() {
 	sleep(1000);
 	getApiData("getFolders", "FolderType=5", foldersCallback);	// get only chat folders
 	sleep(1000);
-	getOperatorAvailabilityData();
-	getInactiveChatData();
-	getActiveChatData();
-	calculateInactiveConc();		// concurrency for all closed/inactive chats
+//	getOperatorAvailabilityData();
+//	getInactiveChatData();
+//	getActiveChatData();
+//	calculateInactiveConc();		// concurrency for all closed/inactive chats
 }
 
 // process started chat object and update all relevat dept, operator and global metrics
@@ -931,7 +931,6 @@ function getInactiveChatData() {
 // Set up callbacks
 io.sockets.on('connection', function(socket){
 
-	
 	socket.on('disconnect', function(data){
 		console.log("connection disconnect");
 	});
@@ -961,6 +960,9 @@ function updateChatStats() {
 		Departments[did].tco = Departments[did].tcan + Departments[did].tcuq + Departments[did].tcua;
 	}
 	
+	io.socket.emit('overallStats', Overall);
+	io.socket.emit('departmentStats', Departments);
+
 	setTimeout(updateChatStats, 2000);	// send update every second
 }
 
