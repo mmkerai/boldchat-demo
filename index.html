@@ -1,49 +1,74 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<title>Demo Dashboard</title>
+    <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id" content="7640409675-vo4hcd4ggr59sbs2sskn662ohrk3skt8.apps.googleusercontent.com">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>H3G Login Report</title>
 	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="/index.js"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
 <style type="text/css">
 .footer{position: fixed; bottom: 0; height: 80px; background: #f5f5f5; width: 100%;}
 .footer > .container{padding: 15px;}
 </style>
 </head>
 <body>
-<h1>Boldchat demo account</h1>
-<p></p>
+<h2><center>Demo Dashboard</center></h2>
 <div class="wrapper col-xs-12">
-<div class="form-horizontal col-xs-6 col-xs-offset-3">
-<form id="loginreportform">
-	<div class="form-group">
-		<label class="control-label col-xs-3" for="fromDate">Enter Date:</label>
-		<div class="col-xs-9">
-			<input class="form-control" id="fromDate" type="date" value=""></input>
-		</div>
+	<div class="col-xs-4">
+		<p id="error"></p>
 	</div>
-	<div class="form-group">
-		<div class="col-xs-9">
-			<input class="btn btn-primary" type="submit" value="Get Login Information">
-		</div>
+	<div class="form-horizontal col-xs-12">
+	<table id="topTable" class="table">
+	  <thead>
+	    <colgroup>
+            <col class="col-md-1">
+        </colgroup>
+		<tr>
+		  <th title="The metric, hover over each one to see definition">Metric</th>
+		  <th title="This is the average concurrent chats per operator">Concurrency</th>
+		  <th title="No of chats answered within 30s">Service Level</th>
+		  <th title="Chats answered previous hour">CPH</th>
+		  <th title="Chats currently in queue waiting to be answered">CIQ</th>
+		  <th title="Longest waiting time for the chats in queue">LWT</th>
+		  <th title="Chats offered today">Offered</th>
+		  <th title="No of chats currently active">Active</th>
+		  <th title="No of chats answered and closed">Answered (complete)</th>
+		  <th title="Chats that went unanswered as they were cancelled while in the queue">Unanswered (in q)</th>
+		  <th title="Chats that went unanswered while in queue with an operator assigned">Unanswered (assigned)</th>
+		  <th title="Chats that were unavailable as percentage of chats offered">Unavailable</th>
+		  <th title="Average speed to answer">ASA</th>
+		  <th title="Average chat time">ACT</th>
+		  <th title="Available chat capacity based on 2 chats per agent">Available Chat Capacity</th>
+		  <th title="No. of agents currently set to away">Agents Away</th>
+		  <th title="No. of agents currently set to available">Agents Available</th>
+		  </tr></thead>
+		<tbody>
+		<tr>
+		  <th scope="row">Overall</th>
+		  <td id="ocon">n/a</td>
+		  <td id="osla">n/a</td>
+		  <td id="ocph">n/a</td>
+		  <td id="ociq">n/a</td>
+		  <td id="olwt">n/a</td>
+		  <td id="ooff">n/a</td>
+		  <td id="otac">n/a</td>
+		  <td id="otcan">n/a</td>
+		  <td id="ouiq">n/a</td>
+		  <td id="ouas">n/a</td>
+		  <td id="ocunavail">n/a</td>
+		  <td id="oasa">n/a</td>
+		  <td id="oact">n/a</td>
+		  <td id="oaccap">n/a</td>
+		  <td id="oaway">n/a</td>
+		  <td id="oavail">n/a</td>
+		</tr>
+	  </tbody>
+	</table>
 	</div>
-</form>
 </div>
-</div>
-<div class="container">
-	<p class="text-center" id="error"></p>
-	<p class="text-center" id="message"></p>
-	<p class="text-center" id="result"></p>
-	<p class="text-center"><a class="btn btn-default" download="logins.csv" id="link2" href=""></a></p>
-</div>
-<footer class="footer">
-	<div class="container">
-		<p class="text-muted text-center">TERMS OF USE: THIS WEB PAGE AND ITS CONTAINING JAVASCRIPT CODE SHOULD NOT BE USED FOR 
-		PRODUCTION USE.  IT SHOULD ONLY BE USED FOR TESTING AND DEVELOPMENT PURPOSES. 
-		LOGMEIN OFFERS NO SUPPORT FOR THIS HOST NOR FOR THE CODE CONTAINED ON THIS PAGE.</p>
-	</div>
-</footer>
 </body>
 </html>

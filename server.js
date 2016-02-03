@@ -104,7 +104,6 @@ var OpMetrics  = function(id,name) {
 };																				
 
 //********************************* Global variables for chat data
-var LoggedInUsers;
 var AllChats;
 var	Departments;	// array of dept ids and dept name objects
 var	DeptOperators;	// array of operators by dept id
@@ -130,7 +129,6 @@ function sleep(milliseconds) {
 }
 
 function initialiseGlobals () {
-	LoggedInUsers = new Array();
 	AllChats = new Object();
 	Departments = new Object();	
 	DeptOperators = new Object();
@@ -149,7 +147,7 @@ function initialiseGlobals () {
 }
 // Process incoming Boldchat triggered chat data
 app.post('/chat-started', function(req, res){
-//	debugLog("Chat-started",req.body);
+	debugLog("Chat-started",req.body);
 	if(ApiDataNotReady == 0)		//make sure all static data has been obtained first
 		processStartedChat(req.body);
 	res.send({ "result": "success" });
@@ -181,7 +179,7 @@ app.post('/chat-closed', function(req, res){
 
 // Process incoming Boldchat triggered operator data
 app.post('/operator-status-changed', function(req, res){ 
-//	debugLog("*****operator-status-changed post",req.body);
+	debugLog("*****operator-status-changed post",req.body);
 	if(ApiDataNotReady == 0)		//make sure all static data has been obtained first
 		processOperatorStatusChanged(req.body);
 	res.send({ "result": "success" });
@@ -227,11 +225,9 @@ function deptsCallback(dlist) {
 	for(var i in dlist) 
 	{
 		dname = dlist[i].Name;
-		if(dname.indexOf("PROD") == -1)	continue;		// if this is not a PROD dept
-		newname = dname.replace("PROD - ","");		// remove PROD from name
 		Departments[dlist[i].DepartmentID] = new DashMetrics(dlist[i].DepartmentID,newname);
 	}
-	console.log("No of PROD Depts: "+Object.keys(Departments).length);
+	console.log("No of Depts: "+Object.keys(Departments).length);
 	for(var did in Departments)
 	{
 		parameters = "DepartmentID="+did;
@@ -787,7 +783,6 @@ function calculateACC_CCONC() {
 			}
 		}
 	}
-	console.log("****tct and mct is " +otct+","+omct);
 	if(otct != 0)
 		Overall.cconc = ((otct+omct)/otct).toFixed(2);
 	Overall.acc = ocap;
@@ -938,58 +933,10 @@ function getInactiveChatData() {
 
 // Set up callbacks
 io.sockets.on('connection', function(socket){
-	
-	socket.on('authenticate', function(data){
-		console.log("authentication request received for: "+data.email);
-		if(GMAILS[data.email] === 'undefined')
-		{
-			console.log("This gmail is invalid: "+data.email);
-			socket.emit('errorResponse',"Invalid email");
-		}
-		else
-		{
-			Google_Oauth_Request(data.token, function (response) {
-			var str = '';
-			//another chunk of data has been received, so append it to `str`
-			response.on('data', function (chunk) {
-				str += chunk;
-			});
-			//the whole response has been received, take final action.
-			response.on('end', function () {
-				var jwt = JSON.parse(str);
-//				console.log("Response received: "+str);
-				if(jwt.aud == GOOGLE_CLIENT_ID)		// valid token response
-				{
-//					console.log("User authenticated, socket id: "+socket.id);
-					LoggedInUsers.push(socket.id);		// save the socket id so that updates can be sent
-					socket.emit('authResponse',"success");
-				}
-				else
-					socket.emit('errorResponse',"Invalid token");
-				});
-			});
-		}
-	});
 
-	socket.on('un-authenticate', function(data){
-		console.log("un-authentication request received: "+data.email);
-		if(GMAILS[data.email] === 'undefined')
-		{
-			console.log("This gmail is invalid: "+data.email);
-			socket.emit('errorResponse',"Invalid email");
-		}
-		else
-		{
-			console.log("Valid gmail: "+data.email);
-			var index = LoggedInUsers.indexOf(socket.id);
-			if(index > -1) LoggedInUsers.splice(index, 1);
-		}
-	});
 	
 	socket.on('disconnect', function(data){
 		console.log("connection disconnect");
-		var index = LoggedInUsers.indexOf(socket.id);	
-		if(index > -1) LoggedInUsers.splice(index, 1);	// remove from list of valid users
 	});
 	
 		socket.on('end', function(data){
@@ -1017,14 +964,6 @@ function updateChatStats() {
 		Departments[did].tco = Departments[did].tcan + Departments[did].tcuq + Departments[did].tcua;
 	}
 	
-	for(var i in LoggedInUsers)
-	{
-		socket = LoggedInUsers[i];
-//		console.log("Socket id is: "+socket);
-		io.sockets.connected[socket].emit('overallStats', Overall);
-		io.sockets.connected[socket].emit('departmentStats', Departments);
-	}
-//	debugLog("Overall", Overall);
 	setTimeout(updateChatStats, 2000);	// send update every second
 }
 
