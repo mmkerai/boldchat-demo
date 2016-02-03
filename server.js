@@ -1,26 +1,3 @@
-// acronyms used
-// cconc - concurrency
-// cph - chats per hour
-// ciq - chats in queue
-// lwt - longest waiting time
-// tco - chats offered (chats active, answered and unabandoned)
-// tac - total active chats (answered)
-// tcan - total chats answered complete (closed)
-// tcuq - total chats unanswered/abandoned in queue
-// tcua - total chats unanswered/abandoned after assigned
-// tcun - total chats unavailable
-// asa - average speed to answer
-// act - average chat time
-// acc - available chat capacity
-// aaway - total number of agents away
-// aavail - total number of agents available
-// status - current status 0 - logged out, 1 - away, 2 - available
-// tcs - time in current status
-// tct - total chat time
-// mct - multi chat time
-// csla - no of chats within sla
-// psla - percent of chats within sla (csla/tcan * 100)
-
 
 //********************************* Set up Express Server 
 http = require('http');
@@ -45,12 +22,10 @@ server.listen(PORT);
 //********************************* Get BoldChat API Credentials stored in Heroku environmental variables
 var AID = process.env.AID || 0;
 var APISETTINGSID = process.env.APISETTINGSID || 0;
-var KEY = process.env.KEY || 0;
+var KEY = process.env.APIKEY || 0;
 var PAGEPATH = process.env.PAGEPATH || "/"; //  Obsecur page path such as /bthCn2HYe0qPlcfZkp1t
-var GMAILS = process.env.GMAILS; // list of valid emails
-var GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-var SLATHRESHOLD = process.env.SLATHRESHOLDS;
-var VALIDACCESSNETWORKS = JSON.parse(process.env.VALIDACCESSNETWORKS) || {};  // JSON string with valid public ISP addresses { "83.83.95.62": "Mark Troyer (LMI) Home Office", "10.10.10.1": "LogMeIn UK Office", "10.10": "H3G internal Network"};
+//var GMAILS = process.env.GMAILS; // list of valid emails
+//var GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 if (AID == 0 || APISETTINGSID == 0 || KEY == 0) {
 	console.log("AID = "+AID+", APISETTINGSID = "+APISETTINGSID+", KEY = "+KEY);
 	console.log("BoldChat API Environmental Variables not set in HEROKU App.  Please verify..");
@@ -59,38 +34,20 @@ if (AID == 0 || APISETTINGSID == 0 || KEY == 0) {
 
 //********************************* Callbacks for all URL requests
 app.get(PAGEPATH, function(req, res){
-	var ip = req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'].split(',')[0] : req.connection.remoteAddress;
-	if (VALIDACCESSNETWORKS[ip])  // TODO:  Add in Access Control via White List
-	{
-		console.log("IP Addrees: "+ip+" was on the white list.");
-	}
-	else 
-	{
-		console.log("IP Address: "+ip+" was NOT on the white list.");
-	}
 	
 	debugLog("Cookies",req.cookies);
 	debugLog("Session",req.session);
-	res.sendFile(__dirname + '/dashboard.html');
+	res.sendFile(__dirname + '/index.html');
 });
 
-app.get('/agents.html', function(req, res){
-	res.sendFile(__dirname + '/agents.html');
-});
-app.get('/department.html', function(req, res){
-	res.sendFile(__dirname + '/department.html');
-});
 app.get('/index.css', function(req, res){ 
 	res.sendFile(__dirname + '/index.css');
 });
 app.get('/dashboard.js', function(req, res){
-	res.sendFile(__dirname + '/dashboard.js');
+	res.sendFile(__dirname + '/index.js');
 });
 app.get('/favicon.ico', function(req, res){
 	res.sendFile(__dirname + '/favicon.ico');
-});
-app.get('/threelogo.png', function(req, res){
-	res.sendFile(__dirname + '/threelogo.png');
 });
 
 //********************************* Global class for chat data
