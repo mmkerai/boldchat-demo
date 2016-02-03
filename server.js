@@ -104,6 +104,7 @@ var OpMetrics  = function(id,name) {
 };																				
 
 //********************************* Global variables for chat data
+var Socket;
 var AllChats;
 var	Departments;	// array of dept ids and dept name objects
 var	DeptOperators;	// array of operators by dept id
@@ -930,8 +931,9 @@ function getInactiveChatData() {
 
 // Set up callbacks
 io.sockets.on('connection', function(socket){
+		Socket = socket;
 
-	socket.on('disconnect', function(data){
+		socket.on('disconnect', function(data){
 		console.log("connection disconnect");
 	});
 	
@@ -960,8 +962,8 @@ function updateChatStats() {
 		Departments[did].tco = Departments[did].tcan + Departments[did].tcuq + Departments[did].tcua;
 	}
 	
-	socket.emit('overallStats', Overall);
-	socket.emit('departmentStats', Departments);
+	Socket.emit('overallStats', Overall);
+	Socket.emit('departmentStats', Departments);
 
 	setTimeout(updateChatStats, 2000);	// send update every second
 }
