@@ -248,10 +248,7 @@ function operatorsCallback(dlist) {
 function foldersCallback(dlist) {
 	for(var i in dlist) 
 	{
-		if(dlist[i].FolderType == 5)		// select only chat folder types
-		{
-			Folders[dlist[i].FolderID] = dlist[i].Name;
-		}
+		Folders[dlist[i].FolderID] = dlist[i].Name;
 	}
 	console.log("No of Chat Folders: "+Object.keys(Folders).length);
 }
