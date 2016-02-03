@@ -1,0 +1,16 @@
+#users {
+	margin: 20px;
+	height: 400px; 
+	background-color: white;
+	border: 1px black solid;
+	overflow: scroll;
+	overflow-x: hidden;
+}
+.log {
+	margin: 20px;
+	height: 400px; 
+	background-color: white;
+	border: 1px black solid;
+	overflow: scroll;
+	overflow-x: hidden;
+}

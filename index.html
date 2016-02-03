@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>H3G Login Report</title>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="/index.js"></script>
+<style type="text/css">
+.footer{position: fixed; bottom: 0; height: 80px; background: #f5f5f5; width: 100%;}
+.footer > .container{padding: 15px;}
+</style>
+</head>
+<body>
+<h1>Boldchat demo account</h1>
+<p></p>
+<div class="wrapper col-xs-12">
+<div class="form-horizontal col-xs-6 col-xs-offset-3">
+<form id="loginreportform">
+	<div class="form-group">
+		<label class="control-label col-xs-3" for="fromDate">Enter Date:</label>
+		<div class="col-xs-9">
+			<input class="form-control" id="fromDate" type="date" value=""></input>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-xs-9">
+			<input class="btn btn-primary" type="submit" value="Get Login Information">
+		</div>
+	</div>
+</form>
+</div>
+</div>
+<div class="container">
+	<p class="text-center" id="error"></p>
+	<p class="text-center" id="message"></p>
+	<p class="text-center" id="result"></p>
+	<p class="text-center"><a class="btn btn-default" download="logins.csv" id="link2" href=""></a></p>
+</div>
+<footer class="footer">
+	<div class="container">
+		<p class="text-muted text-center">TERMS OF USE: THIS WEB PAGE AND ITS CONTAINING JAVASCRIPT CODE SHOULD NOT BE USED FOR 
+		PRODUCTION USE.  IT SHOULD ONLY BE USED FOR TESTING AND DEVELOPMENT PURPOSES. 
+		LOGMEIN OFFERS NO SUPPORT FOR THIS HOST NOR FOR THE CODE CONTAINED ON THIS PAGE.</p>
+	</div>
+</footer>
+</body>
+</html>
