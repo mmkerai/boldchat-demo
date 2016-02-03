@@ -119,6 +119,7 @@ var TimeNow;			// global for current time
 var EndOfDay;			// global time for end of the day before all stats are reset
 var Overall;		// top level stats
 var	OperatorsSetupComplete;
+var SLATHRESHOLD = 20;
 
 function sleep(milliseconds) {
   var start = new Date().getTime();
