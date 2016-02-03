@@ -43,7 +43,7 @@ app.get(PAGEPATH, function(req, res){
 app.get('/index.css', function(req, res){ 
 	res.sendFile(__dirname + '/index.css');
 });
-app.get('/dashboard.js', function(req, res){
+app.get('/index.js', function(req, res){
 	res.sendFile(__dirname + '/index.js');
 });
 app.get('/favicon.ico', function(req, res){
@@ -335,7 +335,7 @@ function doStartOfDay() {
 	sleep(1000);
 	getApiData("getFolders", "FolderType=5", foldersCallback);	// get only chat folders
 	sleep(1000);
-//	getOperatorAvailabilityData();
+	getOperatorAvailabilityData();
 //	getInactiveChatData();
 //	getActiveChatData();
 //	calculateInactiveConc();		// concurrency for all closed/inactive chats
