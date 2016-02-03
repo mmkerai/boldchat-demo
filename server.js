@@ -962,8 +962,11 @@ function updateChatStats() {
 		Departments[did].tco = Departments[did].tcan + Departments[did].tcuq + Departments[did].tcua;
 	}
 	
-	Socket.emit('overallStats', Overall);
-	Socket.emit('departmentStats', Departments);
+	if(typeof(Socket) !== 'undefined')
+	{
+		Socket.emit('overallStats', Overall);
+		Socket.emit('departmentStats', Departments);
+	}
 
 	setTimeout(updateChatStats, 2000);	// send update every second
 }
