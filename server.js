@@ -1,3 +1,4 @@
+//**** Node.js file for BCDemo app *********//
 
 //********************************* Set up Express Server 
 http = require('http');
@@ -6,6 +7,7 @@ var express = require('express'),
 	server = require('http').createServer(app),
 	io = require('socket.io').listen(server);
 var bodyParser = require('body-parser');
+var fs = require('fs');
 //var cookieParser = require('cookie-parser');
 //var session = require("express-session");
 //app.use(cookieParser());
