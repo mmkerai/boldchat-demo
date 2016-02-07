@@ -7,9 +7,9 @@ var express = require('express'),
 	io = require('socket.io').listen(server);
 var bodyParser = require('body-parser');
 //var cookieParser = require('cookie-parser');
-var session = require("express-session");
+//var session = require("express-session");
 //app.use(cookieParser());
-app.use(session({resave: true, saveUninitialized: true, secret: 'GoogleOauthDemobyMMK', cookie: { maxAge: 600000 }}));
+//app.use(session({resave: true, saveUninitialized: true, secret: 'GoogleOauthDemobyMMK', cookie: { maxAge: 600000 }}));
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
