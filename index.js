@@ -18,8 +18,6 @@ function onSignIn(googleUser) {
 }
 
 $(document).ready(function() {
-did = getURLParameter("did");
-console.log("did is "+did);
 
   	$("#g-signout").hide();
 
@@ -27,7 +25,7 @@ console.log("did is "+did);
 		$("#g-signout").show();
 		$("#gname").text(profile.getName());
 		$("#gprofile-image").attr({src: profile.getImageUrl()});
-		$("#error").text("");
+		$("#error").text("User has successfully signed in");
 	});
 
 	socket.on('errorResponse', function(data){
@@ -45,6 +43,8 @@ function signOut() {
 	auth2.signOut().then(function () {
 		console.log('User signed out.');
 		$("#g-signout").hide();
+		$("#error").text("User not signed in");
+
 
 	if(Gid_token !== 'undefined')
 		socket.emit('un-authenticate', {token: Gid_token, email: profile.getEmail()});
