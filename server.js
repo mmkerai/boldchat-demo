@@ -172,4 +172,4 @@ io.sockets.on('connection', function(socket){
 
 });
 
-doStartOfDay();		// initialise everything
+console.log("Server Started");
