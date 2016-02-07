@@ -23,19 +23,9 @@ server.listen(PORT);
 var PAGEPATH = process.env.PAGEPATH || "/"; //  Obsecur page path such as /bthCn2HYe0qPlcfZkp1t
 var GMAILS = process.env.GMAILS; // list of valid emails
 var GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-var VALIDACCESSNETWORKS = JSON.parse(process.env.VALIDACCESSNETWORKS) || {};  // JSON string with valid public ISP addresses { "83.83.95.62": "Mark Troyer (LMI) Home Office", "10.10.10.1": "LogMeIn UK Office", "10.10": "H3G internal Network"};
 
 //********************************* Callbacks for all URL requests
 app.get(PAGEPATH, function(req, res){
-	var ip = req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'].split(',')[0] : req.connection.remoteAddress;
-	if (VALIDACCESSNETWORKS[ip])  // TODO:  Add in Access Control via White List
-	{
-		console.log("IP Addrees: "+ip+" was on the white list.");
-	}
-	else 
-	{
-		console.log("IP Address: "+ip+" was NOT on the white list.");
-	}
 	
 	debugLog("Cookies",req.cookies);
 	debugLog("Session",req.session);
