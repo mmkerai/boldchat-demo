@@ -103,14 +103,14 @@ io.sockets.on('connection', function(socket){
 	
 	socket.on('authenticate', function(data){
 		console.log("authentication request received for: "+data.email);
-		if(GMAILS[data.email] === 'undefined')
+/*		if(GMAILS[data.email] === 'undefined')
 		{
 			console.log("This gmail is invalid: "+data.email);
 			socket.emit('errorResponse',"Invalid email");
 		}
 		else
 		{
-			Google_Oauth_Request(data.token, function (response) {
+*/			Google_Oauth_Request(data.token, function (response) {
 			var str = '';
 			//another chunk of data has been received, so append it to `str`
 			response.on('data', function (chunk) {
@@ -130,7 +130,7 @@ io.sockets.on('connection', function(socket){
 					socket.emit('errorResponse',"Invalid token");
 				});
 			});
-		}
+//		}
 	});
 
 	socket.on('un-authenticate', function(data){
