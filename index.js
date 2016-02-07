@@ -25,7 +25,8 @@ $(document).ready(function() {
 		$("#g-signout").show();
 		$("#gname").text(profile.getName());
 		$("#gprofile-image").attr({src: profile.getImageUrl()});
-		$("#error").text("User has successfully signed in");
+		$("#error").text("");
+		$("#message").text("User successfully signed in");
 	});
 
 	socket.on('errorResponse', function(data){
@@ -43,8 +44,7 @@ function signOut() {
 	auth2.signOut().then(function () {
 		console.log('User signed out.');
 		$("#g-signout").hide();
-		$("#error").text("User not signed in");
-
+		$("#message").text("User not signed in");
 
 	if(Gid_token !== 'undefined')
 		socket.emit('un-authenticate', {token: Gid_token, email: profile.getEmail()});
