@@ -70,21 +70,9 @@ function sleep(milliseconds) {
 
 function initialiseGlobals () {
 	LoggedInUsers = new Array();
-	AllChats = new Object();
-	Departments = new Object();	
-	DeptOperators = new Object();
-	OperatorDepts = new Object();
-	OperatorCconc = new Object();
-	Folders = new Object();	
-	Operators = new Object();
-	WaitingTimes = new Object();
-	Teams = new Object();
-	ApiDataNotReady = 0;
 	TimeNow = new Date();
 	EndOfDay = TimeNow;
 	EndOfDay.setHours(23,59,59,0);	// last second of the day
-	Overall = new DashMetrics("11111111","Overall");	
-	OperatorsSetupComplete = false;
 }
 
 // Set up code for outbound BoldChat API calls.  All of the capture callback code should ideally be packaged as an object.
@@ -172,4 +160,5 @@ io.sockets.on('connection', function(socket){
 
 });
 
+initialiseGlobals();
 console.log("Server Started");
