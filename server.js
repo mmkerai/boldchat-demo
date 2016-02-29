@@ -17,16 +17,16 @@ var PORT = Number(process.env.PORT || 3000);
 server.listen(PORT);
 
 //********************************* Get BoldChat API Credentials stored in Heroku environmental variables
-var PAGEPATH = process.env.PAGEPATH || "/"; //  Obsecur page path such as /bthCn2HYe0qPlcfZkp1t
+var AID = process.env.AID || 0;
+var APISETTINGSID = process.env.APISETTINGSID || 0;
+var KEY = process.env.KEY || 0;
 var GMAILS = process.env.GMAILS; // list of valid emails
 var GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 
 //********************************* Callbacks for all URL requests
-app.get(PAGEPATH, function(req, res){
-	
+app.get('/', function(req, res){
 	res.sendFile(__dirname + '/index.html');
 });
-
 app.get('/index.css', function(req, res){ 
 	res.sendFile(__dirname + '/index.css');
 });
@@ -64,6 +64,18 @@ function initialiseGlobals () {
 var fs = require('fs');
 eval(fs.readFileSync('hmac-sha512.js')+'');
 var https = require('https');
+
+function BC_API_Request(api_method,params,callBackFunction) {
+	var auth = AID + ':' + APISETTINGSID + ':' + (new Date()).getTime();
+	var authHash = auth + ':' + CryptoJS.SHA512(auth + KEY).toString(CryptoJS.enc.Hex);
+	var options = {
+		host : 'api.boldchat.com', 
+		port : 443, 
+		path : '/aid/'+AID+'/data/rest/json/v1/'+api_method+'?auth='+authHash+'&'+params, 
+		method : 'GET'
+		};
+	https.request(options, callBackFunction).end();
+}
 
 function Google_Oauth_Request(token,callBackFunction) {
 	var options = {
