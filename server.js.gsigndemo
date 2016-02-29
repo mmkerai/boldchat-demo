@@ -1,5 +1,4 @@
-// Get operator availability test poller
-// Uses Uber-electronics to log results as no file system on Heroku
+// Google OAuth demo
 //********************************* Set up Express Server 
 http = require('http');
 var express = require('express'),
@@ -7,6 +6,10 @@ var express = require('express'),
 	server = require('http').createServer(app),
 	io = require('socket.io').listen(server);
 var bodyParser = require('body-parser');
+//var cookieParser = require('cookie-parser');
+//var session = require("express-session");
+//app.use(cookieParser());
+//app.use(session({resave: true, saveUninitialized: true, secret: 'GoogleOauthDemobyMMK', cookie: { maxAge: 600000 }}));
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
@@ -24,6 +27,8 @@ var GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 //********************************* Callbacks for all URL requests
 app.get(PAGEPATH, function(req, res){
 	
+	debugLog("Cookies",req.cookies);
+	debugLog("Session",req.session);
 	res.sendFile(__dirname + '/index.html');
 });
 
@@ -38,11 +43,21 @@ app.get('/favicon.ico', function(req, res){
 });
 
 //********************************* Global variables for chat data
-var LoggedInUsers = new Array();
-var NoOfRequests;
-var TestStatus;
-var ThisSocketId;
-var ApiSuccess;
+var LoggedInUsers;
+var AllChats;
+var	Departments;	// array of dept ids and dept name objects
+var	DeptOperators;	// array of operators by dept id
+var	OperatorDepts;	// array of depts for each operator
+var	OperatorCconc;	// chat concurrency for each operator
+var	Folders;	// array of folder ids and folder name objects
+var	Operators;	// array of operator ids and name objects
+var	WaitingTimes;	// array of chat waiting times objects
+var	Teams;	// array of team names
+var ApiDataNotReady;	// Flag to show when data has been received from API so that data can be processed
+var TimeNow;			// global for current time
+var EndOfDay;			// global time for end of the day before all stats are reset
+var Overall;		// top level stats
+var	OperatorsSetupComplete;
 
 function sleep(milliseconds) {
   var start = new Date().getTime();
@@ -54,9 +69,10 @@ function sleep(milliseconds) {
 }
 
 function initialiseGlobals () {
-	NoOfRequests = 0;
-	TestStatus = 1;
-	ApiSuccess = 0;
+	LoggedInUsers = new Array();
+	TimeNow = new Date();
+	EndOfDay = TimeNow;
+	EndOfDay.setHours(23,59,59,0);	// last second of the day
 }
 
 // Set up code for outbound BoldChat API calls.  All of the capture callback code should ideally be packaged as an object.
@@ -82,99 +98,19 @@ function debugLog(name, dataobj) {
 	}
 }
 
-// this function calls API again if data is truncated
-function loadNext(method, next, callback) {
-	var str = [];
-	for(var key in next) {
-		if (next.hasOwnProperty(key)) {
-			str.push(encodeURIComponent(key) + "=" + encodeURIComponent(next[key]));
-		}
-	}
-	getApiData(method, str.join("&"), callback);
-}
-
-// calls extraction API and receives JSON objects which are processed by the callback method
-function getApiData(method, params, fcallback,cbparam) {
-	ApiDataNotReady++;		// flag to track api calls
-	BC_API_Request(method, params, function (response) {
-		var str = '';
-		//another chunk of data has been received, so append it to `str`
-		response.on('data', function (chunk) {
-			str += chunk;
-		});
-		//the whole response has been received, take final action.
-		response.on('end', function () {
-			ApiDataNotReady--;
-			var jsonObj;
-			try {
-				jsonObj = JSON.parse(str);
-			}
-			catch (e){
-				console.log("API or JSON error");
-				return;
-			}
-			var next = jsonObj.Next;
-			var data = new Array();
-			data = jsonObj.Data;
-			if(data === 'undefined' || data == null)
-			{
-				console.log("No data returned: "+str);
-				io.sockets.connected[ThisSocketId].emit('errorResponse', "Data error: "+ str);
-				return;		// exit out if error json message received
-			}
-			fcallback(data,cbparam);
-
-			if(typeof next !== 'undefined') 
-			{
-				loadNext(method, next, fcallback);
-			}
-		});
-		// in case there is a html error
-		response.on('error', function(err) {
-		// handle errors with the request itself
-		console.error("Error with the request: ", err.message);
-		ApiDataNotReady--;
-		});
-	});
-}
-
-function operatorAvailabilityCallback(dlist) {
-	// StatusType 0, 1 and 2 is Logged out, logged in as away, logged in as available respectively
-	var operator;
-	var depts;
-	ApiSuccess++;
-	console.log("getOperatorAvailability success: "+dlist.length+" operators");
-	io.sockets.connected[ThisSocketId].emit('testResponse',"Requests made: "+ NoOfReq+" success: "+ApiSuccess);
-}
-
-function doTest() {
-	if(TestStatus == 2)		// if complete
-	{
-		io.sockets.connected[ThisSocketId].emit('testResponse', "Test Complete. "+NoOfReq+" requests made");
-		TestStatus = 0;	// reset for next time
-		return;
-	}
-	NoOfReq++;
-	getApiData("getOperatorAvailability", "ServiceTypeID=1", operatorAvailabilityCallback);
-	setTimeout(doTest,10000);	// run it every 30 seconds
-}
-
 // Set up callbacks
 io.sockets.on('connection', function(socket){
-	ThisSocketId = socket.id;
 	
-	socket.on('authenticate', function(data)
-	{
+	socket.on('authenticate', function(data){
 		console.log("authentication request received for: "+data.email);
-		if(GMAILS[data.email] === 'undefined')
+/*		if(GMAILS[data.email] === 'undefined')
 		{
 			console.log("This gmail is invalid: "+data.email);
 			socket.emit('errorResponse',"Invalid email");
 		}
 		else
 		{
-			Google_Oauth_Request(data.token, function (response) 
-			{
+*/			Google_Oauth_Request(data.token, function (response) {
 			var str = '';
 			//another chunk of data has been received, so append it to `str`
 			response.on('data', function (chunk) {
@@ -194,11 +130,10 @@ io.sockets.on('connection', function(socket){
 					socket.emit('errorResponse',"Invalid token");
 				});
 			});
-		}
+//		}
 	});
 
-	socket.on('un-authenticate', function(data)
-	{
+	socket.on('un-authenticate', function(data){
 		console.log("un-authentication request received: "+data.email);
 		if(GMAILS[data.email] === 'undefined')
 		{
@@ -213,42 +148,17 @@ io.sockets.on('connection', function(socket){
 		}
 	});
 	
-	socket.on('disconnect', function(data)
-	{
+	socket.on('disconnect', function(data){
 		console.log("connection disconnect");
 		var index = LoggedInUsers.indexOf(socket.id);	
 		if(index > -1) LoggedInUsers.splice(index, 1);	// remove from list of valid users
 	});
 	
-	socket.on('end', function(data)
-	{
+		socket.on('end', function(data){
 		console.log("connection ended");
 	});
 
-	socket.on('testAction', function(data)
-	{
-		TimeNow = new Date();
-
-		if(data == "start")
-		{
-			if(TestStatus == 1)		// test already started
-			{
-				socket.emit('errorResponse', "Test already started");				
-			}
-			else
-			{
-				initialiseGlobals();
-				doTest();
-				socket.emit('testResponse', "Started at "+Timenow);
-			}
-		}
-		else if(date == "stop");
-		{
-			TestStatus = 2;			// complete
-		}
-		else
-			console.log("Invalid Test Action");
-	});
 });
 
+initialiseGlobals();
 console.log("Server Started");

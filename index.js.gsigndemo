@@ -17,14 +17,6 @@ function onSignIn(googleUser) {
 	socket.emit('authenticate', {token: Gid_token, email: profile.getEmail()});
 }
 
-function startTest() {
-	socket.emit('testAction',"start");
-}
-
-function stopTest() {
-	socket.emit('testAction',"stop");
-}
-
 $(document).ready(function() {
 
   	$("#g-signout").hide();
@@ -34,15 +26,11 @@ $(document).ready(function() {
 		$("#gname").text(profile.getName());
 		$("#gprofile-image").attr({src: profile.getImageUrl()});
 		$("#error").text("");
-		$("#message1").text("User successfully signed in");
+		$("#message").text("User successfully signed in");
 	});
 
 	socket.on('errorResponse', function(data){
 		$("#error").text(data);
-	});
-
-	socket.on('testResponse', function(data){
-		$("#message1").text(data);
 	});
 
 });
