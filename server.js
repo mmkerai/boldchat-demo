@@ -167,6 +167,7 @@ function operatorAvailabilityCallback(dlist) {
 	var operator;
 	var depts;
 	ApiSuccess++;
+	Uber_Log_Request("Request Successful. "+dlist.length+" operators");
 	console.log("getOperatorAvailability success: "+dlist.length+" operators");
 	io.sockets.connected[ThisSocketId].emit('testResponse',"Requests made: "+ NoOfRequests+" success: "+ApiSuccess);
 }
