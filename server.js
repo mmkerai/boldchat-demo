@@ -43,6 +43,7 @@ var NoOfRequests;
 var TestStatus;
 var ThisSocketId;
 var ApiSuccess;
+var ApiDataNotReady = 0;
 
 function sleep(milliseconds) {
   var start = new Date().getTime();
