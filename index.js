@@ -34,7 +34,7 @@ $(document).ready(function() {
 		$("#gname").text(profile.getName());
 		$("#gprofile-image").attr({src: profile.getImageUrl()});
 		$("#error").text("");
-		$("#message1").text("User successfully signed in");
+		$("#message1").text("User "+profile.getName()+" signed in");
 	});
 
 	socket.on('errorResponse', function(data){
@@ -47,7 +47,6 @@ $(document).ready(function() {
 
 });
 
-
 function signOut() {
 	auth2 = gapi.auth2.getAuthInstance();
 	if(auth2 === 'undefined')
@@ -56,7 +55,7 @@ function signOut() {
 	auth2.signOut().then(function () {
 		console.log('User signed out.');
 		$("#g-signout").hide();
-		$("#message").text("User not signed in");
+		$("#message1").text("User not signed in");
 
 	if(Gid_token !== 'undefined')
 		socket.emit('un-authenticate', {token: Gid_token, email: profile.getEmail()});

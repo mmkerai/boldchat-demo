@@ -144,17 +144,17 @@ function operatorAvailabilityCallback(dlist) {
 	var depts;
 	ApiSuccess++;
 	console.log("getOperatorAvailability success: "+dlist.length+" operators");
-	io.sockets.connected[ThisSocketId].emit('testResponse',"Requests made: "+ NoOfReq+" success: "+ApiSuccess);
+	io.sockets.connected[ThisSocketId].emit('testResponse',"Requests made: "+ NoOfRequests+" success: "+ApiSuccess);
 }
 
 function doTest() {
 	if(TestStatus == 2)		// if complete
 	{
-		io.sockets.connected[ThisSocketId].emit('testResponse', "Test Complete. "+NoOfReq+" requests made");
+		io.sockets.connected[ThisSocketId].emit('testResponse', "Test Complete. "+NoOfRequests+" requests made");
 		TestStatus = 0;	// reset for next time
 		return;
 	}
-	NoOfReq++;
+	NoOfRequests++;
 	getApiData("getOperatorAvailability", "ServiceTypeID=1", operatorAvailabilityCallback);
 	setTimeout(doTest,10000);	// run it every 30 seconds
 }
@@ -239,12 +239,13 @@ io.sockets.on('connection', function(socket){
 			{
 				initialiseGlobals();
 				doTest();
-				socket.emit('testResponse', "Started at "+Timenow);
+				socket.emit('testResponse',"Started at "+Timenow);
 			}
 		}
 		else if(data == "stop")
 		{
 			TestStatus = 2;			// complete
+			socket.emit('testResponse',"Stopped at "+Timenow);
 		}
 		else
 			console.log("Invalid Test Action");
