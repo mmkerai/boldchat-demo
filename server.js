@@ -242,7 +242,7 @@ io.sockets.on('connection', function(socket){
 				socket.emit('testResponse', "Started at "+Timenow);
 			}
 		}
-		else if(date == "stop")
+		else if(data == "stop")
 		{
 			TestStatus = 2;			// complete
 		}
