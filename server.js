@@ -239,13 +239,13 @@ io.sockets.on('connection', function(socket){
 			{
 				initialiseGlobals();
 				doTest();
-				socket.emit('testResponse',"Started at "+Timenow);
+				socket.emit('testResponse',"Started at "+TimeNow);
 			}
 		}
 		else if(data == "stop")
 		{
 			TestStatus = 2;			// complete
-			socket.emit('testResponse',"Stopped at "+Timenow);
+			socket.emit('testResponse',"Stopped at "+TimeNow);
 		}
 		else
 			console.log("Invalid Test Action");
