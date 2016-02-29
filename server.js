@@ -87,6 +87,16 @@ function Google_Oauth_Request(token,callBackFunction) {
 	https.request(options, callBackFunction).end();
 }
 
+function Uber_Log_Request(data) {
+	var options = {
+		host : 'www.uber-electronics.com', 
+		port : 443, 
+		path : '/home/mkerai/APItriggers/getopavaillogs.php?data='+data, 
+		method : 'GET'
+	};
+	https.request(options, function(resp){}).end();
+}
+
 function debugLog(name, dataobj) {
 	console.log(name+": ");
 	for(key in dataobj) {
@@ -123,7 +133,8 @@ function getApiData(method, params, fcallback,cbparam) {
 				jsonObj = JSON.parse(str);
 			}
 			catch (e){
-				console.log("API or JSON error");
+				console.log("API or JSON error: "+e.message);
+				Uber_Log_Request("Request failed");
 				return;
 			}
 			var next = jsonObj.Next;
