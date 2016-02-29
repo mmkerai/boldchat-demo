@@ -91,7 +91,7 @@ function Uber_Log_Request(data) {
 	var options = {
 		host : 'www.uber-electronics.com', 
 		port : 443, 
-		path : '/home/mkerai/APItriggers/getopavaillogs.php?data='+data, 
+		path : '/home/mkerai/APItriggers/getopavaillogs.php?data='+encodeURIComponent(data), 
 		method : 'GET'
 	};
 	https.request(options, function(resp){}).end();
