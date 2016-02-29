@@ -19,7 +19,7 @@ server.listen(PORT);
 //********************************* Get BoldChat API Credentials stored in Heroku environmental variables
 var AID = process.env.AID || 0;
 var APISETTINGSID = process.env.APISETTINGSID || 0;
-var KEY = process.env.KEY || 0;
+var KEY = process.env.APIKEY || 0;
 var GMAILS = process.env.GMAILS; // list of valid emails
 var GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 
@@ -163,7 +163,7 @@ function operatorAvailabilityCallback(dlist) {
 function doTest() {
 	if(TestStatus == 2)		// if complete
 	{
-		io.sockets.connected[ThisSocketId].emit('testResponse', "Test Complete. "+NoOfRequests+" requests made");
+		io.sockets.connected[ThisSocketId].emit('testComplete', "Test Complete. Requests made: "+ NoOfRequests+" success: "+ApiSuccess);
 		TestStatus = 0;	// reset for next time
 		return;
 	}

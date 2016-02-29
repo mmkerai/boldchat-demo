@@ -45,6 +45,10 @@ $(document).ready(function() {
 		$("#message1").text(data);
 	});
 
+	socket.on('testComplete', function(data){
+		$("#message2").text(data);
+	});
+
 });
 
 function signOut() {
