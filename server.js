@@ -143,7 +143,7 @@ function getApiData(method, params, fcallback,cbparam) {
 			if(data === 'undefined' || data == null)
 			{
 				console.log("No data returned: "+str);
-				io.sockets.connected[ThisSocketId].emit('errorResponse', "Data error: "+ str);
+				updateWebPage('errorResponse', "Data error: "+ str);
 				return;		// exit out if error json message received
 			}
 			fcallback(data,cbparam);
@@ -170,19 +170,25 @@ function operatorAvailabilityCallback(dlist) {
 	ApiSuccess++;
 	Uber_Log_Request("Request Successful. "+dlist.length+" operators");
 	console.log("getOperatorAvailability success: "+dlist.length+" operators");
-	io.sockets.connected[ThisSocketId].emit('testResponse',"Requests made: "+ NoOfRequests+" success: "+ApiSuccess);
+	updateWebPage('testResponse',"Requests made: "+ NoOfRequests+" success: "+ApiSuccess);
 }
 
 function doTest() {
 	if(TestStatus == 2)		// if complete
 	{
-		io.sockets.connected[ThisSocketId].emit('testComplete', "Test Complete. Requests made: "+ NoOfRequests+" success: "+ApiSuccess);
+		updateWebPage('testComplete', "Test Complete. Requests made: "+ NoOfRequests+" success: "+ApiSuccess);
 		TestStatus = 0;	// reset for next time
 		return;
 	}
 	NoOfRequests++;
 	getApiData("getOperatorAvailability", "ServiceTypeID=1", operatorAvailabilityCallback);
 	setTimeout(doTest,60000);	// run it every 30 seconds
+}
+
+function updateWebPage(tag, data) {
+	if(typeof(io.sockets.connected[ThisSocketId]) !== 'undefined')
+		io.sockets.connected[ThisSocketId].emit(tag, data);
+
 }
 
 // Set up callbacks
