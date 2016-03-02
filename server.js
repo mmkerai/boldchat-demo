@@ -147,6 +147,7 @@ function getApiData(method, params, fcallback,cbparam) {
 				return;		// exit out if error json message received
 			}
 			fcallback(data,cbparam);
+			
 
 			if(typeof next !== 'undefined') 
 			{
