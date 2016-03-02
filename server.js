@@ -182,7 +182,7 @@ function doTest() {
 	}
 	NoOfRequests++;
 	getApiData("getOperatorAvailability", "ServiceTypeID=1", operatorAvailabilityCallback);
-	setTimeout(doTest,10000);	// run it every 30 seconds
+	setTimeout(doTest,60000);	// run it every 30 seconds
 }
 
 // Set up callbacks
