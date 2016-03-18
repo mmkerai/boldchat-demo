@@ -56,6 +56,13 @@ function initialiseGlobals () {
 	ApiSuccess = 0;
 }
 
+// Process incoming Boldchat triggered operator data
+app.post('/operator-status-changed', function(req, res){ 
+	debugLog("operator-status-changed post message ",req.body);
+	ThisSocket.emit('testComplete',"Operator Status Changed: "+req.body.UserName);
+	res.send({ "result": "success" });
+});
+
 // Set up code for outbound BoldChat API calls.  All of the capture callback code should ideally be packaged as an object.
 var fs = require('fs');
 eval(fs.readFileSync('hmac-sha512.js')+'');
@@ -118,7 +125,6 @@ function getApiData(method, params, fcallback,cbparam) {
 			if(data === 'undefined' || data == null)
 			{
 				console.log("No data returned: "+str);
-				updateWebPage('errorResponse', "Data error: "+ str);
 				return;		// exit out if error json message received
 			}
 			fcallback(data,cbparam);
@@ -150,7 +156,6 @@ function getDepartmentsCallback(dlist) {
 function doTest() {
 	if(TestStatus == 2)		// if complete
 	{
-		updateWebPage('testComplete', "Test Complete. Requests made: "+ NoOfRequests+" success: "+ApiSuccess);
 		TestStatus = 0;	// reset for next time
 		return;
 	}
