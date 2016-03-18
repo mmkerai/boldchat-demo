@@ -1,4 +1,5 @@
-// Boldchat test script for Nodejs and socket.io
+// Get operator availability test poller
+// Uses Uber-electronics to log results as no file system on Heroku
 //********************************* Set up Express Server 
 http = require('http');
 var express = require('express'),
@@ -16,9 +17,11 @@ var PORT = Number(process.env.PORT || 3000);
 server.listen(PORT);
 
 //********************************* Get BoldChat API Credentials stored in Heroku environmental variables
-var AID = "5021647476238876565";
-var APISETTINGSID = "1012509183542984935";
-var KEY = "USaFdI7k9QE24WbB2j7Ks18fMRWzvR4t/6Bszd0VYuayPG0/Ac08HdHD2CQgB+aA9GPc16RS+AOrTSN/cfLvHw==";
+var AID = process.env.AID || 0;
+var APISETTINGSID = process.env.APISETTINGSID || 0;
+var KEY = process.env.APIKEY || 0;
+var GMAILS = process.env.GMAILS; // list of valid emails
+var GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 
 //********************************* Callbacks for all URL requests
 app.get('/', function(req, res){
@@ -35,8 +38,10 @@ app.get('/favicon.ico', function(req, res){
 });
 
 //********************************* Global variables for chat data
+var LoggedInUsers = new Array();
 var NoOfRequests;
 var TestStatus;
+var ThisSocketId;
 var ApiSuccess;
 var ApiDataNotReady = 0;
 
@@ -70,6 +75,26 @@ function BC_API_Request(api_method,params,callBackFunction) {
 		method : 'GET'
 		};
 	https.request(options, callBackFunction).end();
+}
+
+function Google_Oauth_Request(token,callBackFunction) {
+	var options = {
+		host : 'www.googleapis.com', 
+		port : 443, 
+		path : '/oauth2/v3/tokeninfo?id_token='+token, 
+		method : 'GET'
+	};
+	https.request(options, callBackFunction).end();
+}
+
+function Uber_Log_Request(data) {
+	var options = {
+		host : 'www.uber-electronics.com', 
+		port : 443, 
+		path : '/home/mkerai/APItriggers/getopavaillogs.php?data='+encodeURIComponent(data), 
+		method : 'GET'
+	};
+	https.request(options, function(resp){}).end();
 }
 
 function debugLog(name, dataobj) {
@@ -109,6 +134,7 @@ function getApiData(method, params, fcallback,cbparam) {
 			}
 			catch (e){
 				console.log("API or JSON error: "+e.message);
+				Uber_Log_Request("Request failed");
 				return;
 			}
 			var next = jsonObj.Next;
@@ -137,13 +163,14 @@ function getApiData(method, params, fcallback,cbparam) {
 	});
 }
 
-function getDepartmentsCallback(dlist) {
-	var deptdata = "";
-	for(var i in dlist) 
-	{
-		deptdata = deptdata + "Dept: "+dlist[i].Name+ ",ID: "+dlist[i].DepartmentID+"<br/>";
-	}
-	socket.emit('testResponse',deptdata);
+function operatorAvailabilityCallback(dlist) {
+	// StatusType 0, 1 and 2 is Logged out, logged in as away, logged in as available respectively
+	var operator;
+	var depts;
+	ApiSuccess++;
+	Uber_Log_Request("Request Successful. "+dlist.length+" operators");
+	console.log("getOperatorAvailability success: "+dlist.length+" operators");
+	updateWebPage('testResponse',"Requests made: "+ NoOfRequests+" success: "+ApiSuccess);
 }
 
 function doTest() {
@@ -154,14 +181,82 @@ function doTest() {
 		return;
 	}
 	NoOfRequests++;
-	getApiData("getDepartments", "", getDepartmentsCallback);
+	getApiData("getOperatorAvailability", "ServiceTypeID=1", operatorAvailabilityCallback);
 	setTimeout(doTest,60000);	// run it every 30 seconds
+}
+
+function updateWebPage(tag, data) {
+	if(typeof(io.sockets.connected[ThisSocketId]) !== 'undefined')
+		io.sockets.connected[ThisSocketId].emit(tag, data);
+
 }
 
 // Set up callbacks
 io.sockets.on('connection', function(socket){
 	ThisSocketId = socket.id;
 	
+	socket.on('authenticate', function(data)
+	{
+		console.log("authentication request received for: "+data.email);
+		if(GMAILS[data.email] === 'undefined')
+		{
+			console.log("This gmail is invalid: "+data.email);
+			socket.emit('errorResponse',"Invalid email");
+		}
+		else
+		{
+			Google_Oauth_Request(data.token, function (response) 
+			{
+			var str = '';
+			//another chunk of data has been received, so append it to `str`
+			response.on('data', function (chunk) {
+				str += chunk;
+			});
+			//the whole response has been received, take final action.
+			response.on('end', function () {
+				var jwt = JSON.parse(str);
+//				console.log("Response received: "+str);
+				if(jwt.aud == GOOGLE_CLIENT_ID)		// valid token response
+				{
+//					console.log("User authenticated, socket id: "+socket.id);
+					LoggedInUsers.push(socket.id);		// save the socket id so that updates can be sent
+					socket.emit('authResponse',"success");
+				}
+				else
+					socket.emit('errorResponse',"Invalid token");
+				});
+			});
+		}
+	});
+
+	socket.on('un-authenticate', function(data)
+	{
+		console.log("un-authentication request received: "+data.email);
+		if(GMAILS[data.email] === 'undefined')
+		{
+			console.log("This gmail is invalid: "+data.email);
+			socket.emit('errorResponse',"Invalid email");
+		}
+		else
+		{
+			console.log("Valid gmail: "+data.email);
+			var index = LoggedInUsers.indexOf(socket.id);
+			if(index > -1) LoggedInUsers.splice(index, 1);
+		}
+	});
+	
+	socket.on('disconnect', function(data)
+	{
+		console.log("connection disconnect");
+		var index = LoggedInUsers.indexOf(socket.id);	
+		if(index > -1) LoggedInUsers.splice(index, 1);	// remove from list of valid users
+	});
+	
+	socket.on('end', function(data)
+	{
+		console.log("connection ended");
+	});
+
 	socket.on('testAction', function(data)
 	{
 		TimeNow = new Date();
