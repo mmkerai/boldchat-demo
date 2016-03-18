@@ -35,6 +35,7 @@ app.get('/favicon.ico', function(req, res){
 });
 
 //********************************* Global variables for chat data
+var ThisSocket;
 var NoOfRequests;
 var TestStatus;
 var ApiSuccess;
@@ -143,7 +144,7 @@ function getDepartmentsCallback(dlist) {
 	{
 		deptdata = deptdata + "Dept: "+dlist[i].Name+ ",ID: "+dlist[i].DepartmentID+"<br/>";
 	}
-	socket.emit('testResponse',deptdata);
+	ThisSocket.emit('testResponse',deptdata);
 }
 
 function doTest() {
@@ -160,7 +161,7 @@ function doTest() {
 
 // Set up callbacks
 io.sockets.on('connection', function(socket){
-	ThisSocketId = socket.id;
+	ThisSocket = socket;
 	
 	socket.on('testAction', function(data)
 	{
