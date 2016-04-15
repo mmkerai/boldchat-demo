@@ -18,50 +18,19 @@ var PORT = Number(process.env.PORT || 1337);
 server.listen(PORT);
 
 //*********** Get BoldChat API Credentials
-/*
-var AID = process.env.AID || 0;
-var SETTINGSID = process.env.APISETTINGSID || 0;
-var KEY = process.env.APIKEY || 0;
-
-if(AID == 0 || SETTINGSID == 0 || KEY == 0)
-{
-	console.log("BoldChat API Variables not set in Heroku. Reading from config.json file...");
-	var EnVars;
-	try
-	{
-		EnVars = JSON.parse(fs.readFileSync('config.json', 'utf8'));
-		AID = EnVars.AID || 0;
-		SETTINGSID = EnVars.APISETTINGSID || 0;
-		KEY = EnVars.APIKEY || 0;
-	}
-	catch (e)
-	{
-		if(e.code === 'ENOENT')
-			console.log("Config file not found");
-		else
-			console.log("Error code: "+e.code);
-	}
-}
-
-
-*/
-
-console.log("Reading API variables from config.json file...");
 var EnVars;
 var AID;
 var SETTINGSID;
 var KEY;
-var SLATHRESHOLD;
-var AUTHUSERS = {};
 var DoAuth = true;	// default do manual auth from JSON
 
 try
 {
+	console.log("Reading API variables from config.json file...");
 	EnVars = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 	AID = EnVars.AID || 0;
 	SETTINGSID = EnVars.APISETTINGSID || 0;
 	KEY = EnVars.APIKEY || 0;
-//	SLATHRESHOLD = EnVars.SLATHRESHOLDS || 90;
 	DoAuth = false;		// if using config file then must be on TechM server so no user auth required
 }
 catch (e)
@@ -72,8 +41,6 @@ catch (e)
 		AID = process.env.AID || 0;
 		SETTINGSID = process.env.APISETTINGSID || 0;
 		KEY = process.env.APIKEY || 0;
-//		AUTHUSERS = JSON.parse(process.env.AUTHUSERS) || {};
-//		SLATHRESHOLD = process.env.SLATHRESHOLDS || 90;		
 	}
 	else
 		console.log("Error code: "+e.code);
