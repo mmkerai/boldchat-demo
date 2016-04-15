@@ -1,4 +1,4 @@
-// Boldchat test script for Nodejs and socket.io
+// Boldchat test script for Nodejs
 //******** Set up Express Server and socket.io
 
 var http = require('http');
@@ -18,21 +18,21 @@ var PORT = Number(process.env.PORT || 1337);
 server.listen(PORT);
 
 //*********** Get BoldChat API Credentials
-
+/*
 var AID = process.env.AID || 0;
 var SETTINGSID = process.env.APISETTINGSID || 0;
 var KEY = process.env.APIKEY || 0;
 
 if(AID == 0 || SETTINGSID == 0 || KEY == 0)
 {
-	console.log("BoldChat API Variables not set in Heroku. Reading from config file...");
+	console.log("BoldChat API Variables not set in Heroku. Reading from config.json file...");
 	var EnVars;
 	try
 	{
 		EnVars = JSON.parse(fs.readFileSync('config.json', 'utf8'));
-		AID = EnVars.AID;
-		SETTINGSID = EnVars.APISETTINGSID;
-		KEY = EnVars.APIKEY;
+		AID = EnVars.AID || 0;
+		SETTINGSID = EnVars.APISETTINGSID || 0;
+		KEY = EnVars.APIKEY || 0;
 	}
 	catch (e)
 	{
@@ -43,18 +43,51 @@ if(AID == 0 || SETTINGSID == 0 || KEY == 0)
 	}
 }
 
+
+*/
+
+console.log("Reading API variables from config.json file...");
+var EnVars;
+var AID;
+var SETTINGSID;
+var KEY;
+var SLATHRESHOLD;
+var AUTHUSERS = {};
+var DoAuth = true;	// default do manual auth from JSON
+
+try
+{
+	EnVars = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+	AID = EnVars.AID || 0;
+	SETTINGSID = EnVars.APISETTINGSID || 0;
+	KEY = EnVars.APIKEY || 0;
+	SLATHRESHOLD = EnVars.SLATHRESHOLDS || 90;
+	DoAuth = false;		// if using config file then must be on TechM server so no user auth required
+}
+catch (e)
+{
+	if(e.code === 'ENOENT')
+	{
+		console.log("Config file not found, Reading Heroku Environment Variables");
+		AID = process.env.AID || 0;
+		SETTINGSID = process.env.APISETTINGSID || 0;
+		KEY = process.env.APIKEY || 0;
+		AUTHUSERS = JSON.parse(process.env.AUTHUSERS) || {};
+		SLATHRESHOLD = process.env.SLATHRESHOLDS || 90;		
+	}
+	else
+		console.log("Error code: "+e.code);
+}
+
 if(AID == 0 || SETTINGSID == 0 || KEY == 0)
 {
-	console.log("BoldChat API Environmental Variables not set. Terminating!");
+	console.log("BoldChat API Credentials not set. Terminating!");
 	process.exit(1);
 }
 
 console.log("AID is "+AID);
 console.log("API is "+SETTINGSID);
 console.log("KEY is "+KEY);
-
-//********************************* Callbacks for all URL requests
-console.log("Node js dir is "+__dirname);
 
 //********************************* Callbacks for all URL requests
 app.get('/', function(req, res){
@@ -193,8 +226,8 @@ function doTest() {
 		TestStatus = 0;	// reset for next time
 		return;
 	}
-
-	ThisSocket.emit('errorResponse',NoOfRequests++);
+	NoOfRequests++;
+	ThisSocket.emit('errorResponse',"Requests made: "+NoOfRequests);
 	getApiData("getDepartments", "", getDepartmentsCallback);
 	setTimeout(doTest,30000);	// run it every 30 seconds
 }
