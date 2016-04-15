@@ -18,16 +18,12 @@ var PORT = Number(process.env.PORT || 3000);
 server.listen(PORT);
 
 //*********** Get BoldChat API Credentials
-var AID = process.env.AID ;
-var APISETTINGSID = process.env.APISETTINGSID;
-var KEY = process.env.KEY;
-/*
+
 var AID = process.env.AID || 0;
-var APISETTINGSID = process.env.APISETTINGSID || 0;
-var KEY = process.env.KEY || 0;
-*/
-/*
-if(AID == 0 || APISETTINGSID == 0 || KEY == 0)
+var SETTINGSID = process.env.APISETTINGSID || 0;
+var KEY = process.env.APIKEY || 0;
+
+if(AID == 0 || SETTINGSID == 0 || KEY == 0)
 {
 	console.log("BoldChat API Variables not set in Heroku. Reading from config file...");
 	var EnVars;
@@ -35,8 +31,8 @@ if(AID == 0 || APISETTINGSID == 0 || KEY == 0)
 	{
 		EnVars = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 		AID = EnVars.AID;
-		APISETTINGSID = EnVars.APISETTINGSID;
-		KEY = EnVars.KEY;
+		SETTINGSID = EnVars.APISETTINGSID;
+		KEY = EnVars.APIKEY;
 	}
 	catch (e)
 	{
@@ -46,15 +42,15 @@ if(AID == 0 || APISETTINGSID == 0 || KEY == 0)
 			console.log("Error code: "+e.code);
 	}
 }
-*/
-if(AID == 0 || APISETTINGSID == 0 || KEY == 0)
+
+if(AID == 0 || SETTINGSID == 0 || KEY == 0)
 {
 	console.log("BoldChat API Environmental Variables not set. Terminating!");
 	process.exit(1);
 }
 
 console.log("AID is "+AID);
-console.log("API is "+APISETTINGSID);
+console.log("API is "+SETTINGSID);
 console.log("KEY is "+KEY);
 
 //********************************* Callbacks for all URL requests
@@ -116,7 +112,7 @@ eval(fs.readFileSync('hmac-sha512.js')+'');
 var https = require('https');
 
 function BC_API_Request(api_method,params,callBackFunction) {
-	var auth = AID + ':' + APISETTINGSID + ':' + (new Date()).getTime();
+	var auth = AID + ':' + SETTINGSID + ':' + (new Date()).getTime();
 	var authHash = auth + ':' + CryptoJS.SHA512(auth + KEY).toString(CryptoJS.enc.Hex);
 	var options = {
 		host : 'api.boldchat.com', 
