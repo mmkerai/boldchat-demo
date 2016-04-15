@@ -1,11 +1,24 @@
 // Boldchat test script for Nodejs and socket.io
 //******** Set up Express Server and socket.io
+/*
 var http = require('http');
 var https = require('https');
 var app = require('express')();
 var	server = http.createServer(app);
 var	io = require('socket.io').listen(server);
 var fs = require('fs');
+var bodyParser = require('body-parser');
+app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+})); 
+*/
+//********************************* Set up Express Server 
+http = require('http');
+var express = require('express'),
+	app = express(),
+	server = require('http').createServer(app),
+	io = require('socket.io').listen(server);
 var bodyParser = require('body-parser');
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
