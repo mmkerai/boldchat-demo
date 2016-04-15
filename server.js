@@ -14,7 +14,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 })); 
 
 //********** Get port used by Heroku or use a default
-var PORT = Number(process.env.PORT || 3000);
+var PORT = Number(process.env.PORT || 1337);
 server.listen(PORT);
 
 //*********** Get BoldChat API Credentials
@@ -83,15 +83,6 @@ var TestStatus;
 var ApiSuccess;
 var ApiDataNotReady = 0;
 var ChatStatus = ["Logged Out","Away","Available"];
-
-function sleep(milliseconds) {
-  var start = new Date().getTime();
-  for(var i = 0; i < 1e7; i++) {
-    if ((new Date().getTime() - start) > milliseconds){
-      break;
-    }
-  }
-}
 
 function initialiseGlobals () {
 	NoOfRequests = 0;
@@ -202,9 +193,10 @@ function doTest() {
 		TestStatus = 0;	// reset for next time
 		return;
 	}
-	NoOfRequests++;
+
+	ThisSocket.emit('errorResponse',NoOfRequests++);
 	getApiData("getDepartments", "", getDepartmentsCallback);
-	setTimeout(doTest,60000);	// run it every 30 seconds
+	setTimeout(doTest,30000);	// run it every 30 seconds
 }
 
 // Set up callbacks
