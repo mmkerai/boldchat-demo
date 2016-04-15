@@ -21,6 +21,7 @@ server.listen(PORT);
 var AID = process.env.AID || 0;
 var APISETTINGSID = process.env.APISETTINGSID || 0;
 var KEY = process.env.KEY || 0;
+
 if(AID == 0 || APISETTINGSID == 0 || KEY == 0)
 {
 	console.log("BoldChat API Variables not set in Heroku. Reading from config file...");
