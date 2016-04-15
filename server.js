@@ -1,7 +1,5 @@
 // Boldchat test script for Nodejs and socket.io
-//********************************* Set up Express Server 
-// Boldchat test script for Nodejs and socket.io
-//********************************* Set up Express Server 
+//******** Set up Express Server and socket.io
 var http = require('http');
 var https = require('https');
 var app = require('express')();
@@ -14,11 +12,11 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 })); 
 
-//********************************* Get port used by Heroku
+//********** Get port used by Heroku or use a default
 var PORT = Number(process.env.PORT || 1337);
 server.listen(PORT);
 
-//********************************* Get BoldChat API Credentials
+//*********** Get BoldChat API Credentials
 
 var AID = process.env.AID || 0;
 var APISETTINGSID = process.env.APISETTINGSID || 0;
@@ -26,15 +24,27 @@ var KEY = process.env.KEY || 0;
 if(AID == 0 || APISETTINGSID == 0 || KEY == 0)
 {
 	console.log("BoldChat API Variables not set in Heroku. Reading from config file...");
-	var EnVars = JSON.parse(fs.readFileSync('config.json', 'utf8'));
-	AID = EnVars.AID;
-	APISETTINGSID = EnVars.APISETTINGSID;
-	KEY = EnVars.KEY;
-	if(AID == 0 || APISETTINGSID == 0 || KEY == 0)
+	var EnVars;
+	try
 	{
-		console.log("BoldChat API Environmental Variables not set.  Please verify..");
-		process.exit(1);
+		EnVars = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+		AID = EnVars.AID;
+		APISETTINGSID = EnVars.APISETTINGSID;
+		KEY = EnVars.KEY;
 	}
+	catch (e)
+	{
+		if(e.code === 'ENOENT')
+			console.log("Config file not found");
+		else
+			console.log("Error code: "+e.code);
+	}
+}
+
+if(AID == 0 || APISETTINGSID == 0 || KEY == 0)
+{
+	console.log("BoldChat API Environmental Variables not set. Terminating!");
+	process.exit(1);
 }
 
 console.log("AID is "+AID);
