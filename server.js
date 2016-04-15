@@ -1,6 +1,6 @@
 // Boldchat test script for Nodejs and socket.io
 //******** Set up Express Server and socket.io
-/*
+
 var http = require('http');
 var https = require('https');
 var app = require('express')();
@@ -12,28 +12,20 @@ app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 })); 
-*/
-//********************************* Set up Express Server 
-http = require('http');
-var express = require('express'),
-	app = express(),
-	server = require('http').createServer(app),
-	io = require('socket.io').listen(server);
-var bodyParser = require('body-parser');
-app.use( bodyParser.json() );       // to support JSON-encoded bodies
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-  extended: true
-})); 
 
 //********** Get port used by Heroku or use a default
 var PORT = Number(process.env.PORT || 3000);
 server.listen(PORT);
 
 //*********** Get BoldChat API Credentials
-
+var AID = process.env.AID ;
+var APISETTINGSID = process.env.APISETTINGSID;
+var KEY = process.env.KEY;
+/*
 var AID = process.env.AID || 0;
 var APISETTINGSID = process.env.APISETTINGSID || 0;
 var KEY = process.env.KEY || 0;
+*/
 /*
 if(AID == 0 || APISETTINGSID == 0 || KEY == 0)
 {
