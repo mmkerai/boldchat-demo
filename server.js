@@ -1,10 +1,13 @@
 // Boldchat test script for Nodejs and socket.io
 //********************************* Set up Express Server 
-http = require('http');
-var express = require('express'),
-	app = express(),
-	server = require('http').createServer(app),
-	io = require('socket.io').listen(server);
+// Boldchat test script for Nodejs and socket.io
+//********************************* Set up Express Server 
+var http = require('http');
+var https = require('https');
+var app = require('express')();
+var	server = http.createServer(app);
+var	io = require('socket.io').listen(server);
+var fs = require('fs');
 var bodyParser = require('body-parser');
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -12,13 +15,34 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 })); 
 
 //********************************* Get port used by Heroku
-var PORT = Number(process.env.PORT || 3000);
+var PORT = Number(process.env.PORT || 1337);
 server.listen(PORT);
 
-//********************************* Get BoldChat API Credentials stored in Heroku environmental variables
-var AID = "5021647476238876565";
-var APISETTINGSID = "1012509183542984935";
-var KEY = "USaFdI7k9QE24WbB2j7Ks18fMRWzvR4t/6Bszd0VYuayPG0/Ac08HdHD2CQgB+aA9GPc16RS+AOrTSN/cfLvHw==";
+//********************************* Get BoldChat API Credentials
+
+var AID = process.env.AID || 0;
+var APISETTINGSID = process.env.APISETTINGSID || 0;
+var KEY = process.env.KEY || 0;
+if(AID == 0 || APISETTINGSID == 0 || KEY == 0)
+{
+	console.log("BoldChat API Variables not set in Heroku. Reading from config file...");
+	var EnVars = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+	AID = EnVars.AID;
+	APISETTINGSID = EnVars.APISETTINGSID;
+	KEY = EnVars.KEY;
+	if(AID == 0 || APISETTINGSID == 0 || KEY == 0)
+	{
+		console.log("BoldChat API Environmental Variables not set.  Please verify..");
+		process.exit(1);
+	}
+}
+
+console.log("AID is "+AID);
+console.log("API is "+APISETTINGSID);
+console.log("KEY is "+KEY);
+
+//********************************* Callbacks for all URL requests
+console.log("Node js dir is "+__dirname);
 
 //********************************* Callbacks for all URL requests
 app.get('/', function(req, res){
@@ -33,6 +57,12 @@ app.get('/index.js', function(req, res){
 app.get('/favicon.ico', function(req, res){
 	res.sendFile(__dirname + '/favicon.ico');
 });
+app.get('/jquery-2.1.3.min.js', function(req, res){
+	res.sendFile(__dirname + '/jquery-2.1.3.min.js');
+});
+app.get('/bootstrap.min.css', function(req, res){
+	res.sendFile(__dirname + '/bootstrap.min.css');
+});
 
 //********************************* Global variables for chat data
 var ThisSocket;
@@ -40,6 +70,7 @@ var NoOfRequests;
 var TestStatus;
 var ApiSuccess;
 var ApiDataNotReady = 0;
+var ChatStatus = ["Logged Out","Away","Available"];
 
 function sleep(milliseconds) {
   var start = new Date().getTime();
@@ -59,7 +90,7 @@ function initialiseGlobals () {
 // Process incoming Boldchat triggered operator data
 app.post('/operator-status-changed', function(req, res){ 
 	debugLog("operator-status-changed post message ",req.body);
-	ThisSocket.emit('testComplete',"Operator Status Changed: "+req.body.UserName);
+	ThisSocket.emit('testComplete',"Operator: "+req.body.UserName+" ,Status Changed to: "+ChatStatus[req.body.StatusType]);
 	res.send({ "result": "success" });
 });
 
