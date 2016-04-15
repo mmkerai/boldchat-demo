@@ -61,7 +61,7 @@ try
 	AID = EnVars.AID || 0;
 	SETTINGSID = EnVars.APISETTINGSID || 0;
 	KEY = EnVars.APIKEY || 0;
-	SLATHRESHOLD = EnVars.SLATHRESHOLDS || 90;
+//	SLATHRESHOLD = EnVars.SLATHRESHOLDS || 90;
 	DoAuth = false;		// if using config file then must be on TechM server so no user auth required
 }
 catch (e)
@@ -72,8 +72,8 @@ catch (e)
 		AID = process.env.AID || 0;
 		SETTINGSID = process.env.APISETTINGSID || 0;
 		KEY = process.env.APIKEY || 0;
-		AUTHUSERS = JSON.parse(process.env.AUTHUSERS) || {};
-		SLATHRESHOLD = process.env.SLATHRESHOLDS || 90;		
+//		AUTHUSERS = JSON.parse(process.env.AUTHUSERS) || {};
+//		SLATHRESHOLD = process.env.SLATHRESHOLDS || 90;		
 	}
 	else
 		console.log("Error code: "+e.code);
