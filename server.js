@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 })); 
 
 //********** Get port used by Heroku or use a default
-var PORT = Number(process.env.PORT || 1337);
+var PORT = Number(process.env.PORT || 3000);
 server.listen(PORT);
 
 //*********** Get BoldChat API Credentials
