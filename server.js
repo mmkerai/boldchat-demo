@@ -7,6 +7,7 @@ var app = require('express')();
 var	server = http.createServer(app);
 var	io = require('socket.io').listen(server);
 var fs = require('fs');
+var crypto = require('crypto');
 var bodyParser = require('body-parser');
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -55,7 +56,7 @@ if(AID == 0 || SETTINGSID == 0 || KEY == 0)
 console.log("AID is "+AID);
 console.log("API is "+SETTINGSID);
 console.log("KEY is "+KEY);
-
+var TriggerUrl = "https://bolddemo.herokuapp.com";		// used to validate the signature of push data
 //********************************* Callbacks for all URL requests
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/index.html');
@@ -91,11 +92,45 @@ function initialiseGlobals () {
 }
 
 // Process incoming Boldchat triggered operator data
-app.post('/operator-status-changed', function(req, res){ 
-	debugLog("operator-status-changed post message ",req.body);
+app.post('/operator-status-changed', function(req, res){
+	if(validateSignature(req.body, TriggerUrl+'/operator-status-changed') != true) 
+	{
+		console.log("Trigger failed validation");
+		debugLog("operator-status-changed post message ",req.body);
+	}
 	ThisSocket.emit('testComplete',"Operator: "+req.body.UserName+" ,Status Changed to: "+ChatStatus[req.body.StatusType]);
 	res.send({ "result": "success" });
 });
+
+function validateSignature(body, triggerUrl) {
+	
+	var unencrypted = getUnencryptedSignature(body, triggerUrl);
+	console.log('unencrypted signature', unencrypted);
+	console.log('encrypted signature', encryptSignature(unencrypted));
+	return true;
+};
+
+function getUnencryptedSignature(body, triggerUrl) {
+	if (!body.signed) {
+		throw new Error('No signed parameter found for computing signature hash');
+	}
+	var signatureParamNames = body.signed.split('&');
+
+	var paramNameValues = new Array();
+	for (var i = 0; i < signatureParamNames.length; i++) {
+		var signParam = signatureParamNames[i];
+		paramNameValues.push(encodeURIComponent(signParam) + '=' + encodeURIComponent(body[signParam]));
+	}
+
+	var separator = triggerUrl.indexOf('?') === -1 ? '?' : '&';
+	return triggerUrl + separator + paramNameValues.join('&');
+}
+
+function encryptSignature(unencryptedSignature) {
+	var source = unencryptedSignature + apiKeyUsedForApiTrigger;
+	var hash = crypto.createHash('sha512').update(source).digest('hex');
+	return hash.toUpperCase();
+}
 
 // Set up code for outbound BoldChat API calls.  All of the capture callback code should ideally be packaged as an object.
 var fs = require('fs');
