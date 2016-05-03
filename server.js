@@ -105,8 +105,9 @@ app.post('/operator-status-changed', function(req, res){
 function validateSignature(body, triggerUrl) {
 	
 	var unencrypted = getUnencryptedSignature(body, triggerUrl);
-	console.log('unencrypted signature', unencrypted);
-	console.log('encrypted signature', encryptSignature(unencrypted));
+//	console.log('unencrypted signature', unencrypted);
+	console.log('computed signature: '+ encryptSignature(unencrypted));
+	console.log('trigger signature: '+ body.signature);
 	return true;
 };
 
