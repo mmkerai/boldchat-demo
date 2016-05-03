@@ -56,7 +56,7 @@ if(AID == 0 || SETTINGSID == 0 || KEY == 0)
 console.log("AID is "+AID);
 console.log("API is "+SETTINGSID);
 console.log("KEY is "+KEY);
-var TriggerUrl = "https://bolddemo.herokuapp.com";		// used to validate the signature of push data
+var TriggerDomain = "https://bolddemo.herokuapp.com";		// used to validate the signature of push data
 //********************************* Callbacks for all URL requests
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/index.html');
@@ -93,7 +93,7 @@ function initialiseGlobals () {
 
 // Process incoming Boldchat triggered operator data
 app.post('/operator-status-changed', function(req, res){
-	if(validateSignature(req.body, TriggerUrl+'/operator-status-changed') != true) 
+	if(validateSignature(req.body, TriggerDomain+'/operator-status-changed') != true) 
 	{
 		console.log("Trigger failed validation");
 		debugLog("operator-status-changed post message ",req.body);
@@ -147,7 +147,8 @@ var https = require('https');
 
 function BC_API_Request(api_method,params,callBackFunction) {
 	var auth = AID + ':' + SETTINGSID + ':' + (new Date()).getTime();
-	var authHash = auth + ':' + CryptoJS.SHA512(auth + KEY).toString(CryptoJS.enc.Hex);
+//	var authHash = auth + ':' + CryptoJS.SHA512(auth + KEY).toString(CryptoJS.enc.Hex);
+	var authHash = auth + ':' + crypto.createHash('sha512').update(auth + KEY).digest('hex');
 	var options = {
 		host : 'api.boldchat.com', 
 		port : 443, 
@@ -274,4 +275,4 @@ io.sockets.on('connection', function(socket){
 	});
 });
 
-console.log("Server Started");
+console.log("Server Started on port "+PORT);
