@@ -141,9 +141,9 @@ function encryptSignature(unencryptedSignature) {
 }
 
 // Set up code for outbound BoldChat API calls.  All of the capture callback code should ideally be packaged as an object.
-var fs = require('fs');
-eval(fs.readFileSync('hmac-sha512.js')+'');
-var https = require('https');
+//var fs = require('fs');
+//eval(fs.readFileSync('hmac-sha512.js')+'');
+//var https = require('https');
 
 function BC_API_Request(api_method,params,callBackFunction) {
 	var auth = AID + ':' + SETTINGSID + ':' + (new Date()).getTime();
