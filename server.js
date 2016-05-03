@@ -97,8 +97,11 @@ app.post('/operator-status-changed', function(req, res){
 	{
 		console.log("Trigger failed validation");
 		debugLog("operator-status-changed post message ",req.body);
+		ThisSocket.emit('testComplete',"Signature validation failed");	
 	}
-	ThisSocket.emit('testComplete',"Operator: "+req.body.UserName+" ,Status Changed to: "+ChatStatus[req.body.StatusType]);
+	else
+		ThisSocket.emit('testComplete',"Operator: "+req.body.UserName+" ,Status Changed to: "+ChatStatus[req.body.StatusType]);
+	
 	res.send({ "result": "success" });
 });
 
