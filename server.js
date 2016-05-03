@@ -127,7 +127,7 @@ function getUnencryptedSignature(body, triggerUrl) {
 }
 
 function encryptSignature(unencryptedSignature) {
-	var source = unencryptedSignature + apiKeyUsedForApiTrigger;
+	var source = unencryptedSignature + KEY;
 	var hash = crypto.createHash('sha512').update(source).digest('hex');
 	return hash.toUpperCase();
 }
