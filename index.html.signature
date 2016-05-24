@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Boldchat Node.js test script</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script type="text/javascript" src="jquery-2.1.3.min.js"></script>
+	<link rel="stylesheet" href="bootstrap.min.css">
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="/index.js"></script>
+</head>
+<body>
+<h2><center>Boldchat Node.js test script</center></h2>
+<p></p>
+<div class="wrapper col-xs-12">
+	<div class="col-xs-3">
+		<div class='btn btn-primary' onClick='startTest()'>Start Test</div>
+	</div>
+	<div class="col-xs-3">
+		<div class='btn btn-info' onClick='stopTest()'>End Test</div>
+	</div>
+</div>
+<p></p>
+	<p class="text-center" id="error"></p>
+	<p class="text-center" id="message1"></p>
+	<p class="text-center" id="message2"></p>
+	<p class="text-center" id="message3"></p>
+</body>
+</html>
