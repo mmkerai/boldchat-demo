@@ -109,7 +109,7 @@ function validateSignature(body, triggerUrl) {
 	
 	var unencrypted = getUnencryptedSignature(body, triggerUrl);
 	var encrypted = encryptSignature(unencrypted);
-	console.log('unencrypted signature', unencrypted);
+	console.log('unencrypted signature: ', unencrypted);
 	console.log('computed signature: '+ encrypted);
 	console.log('trigger signature: '+ body.signature);
 	if(encrypted == body.signature)
@@ -131,7 +131,8 @@ function getUnencryptedSignature(body, triggerUrl) {
 	}
 
 	var separator = triggerUrl.indexOf('?') === -1 ? '?' : '&';
-	return triggerUrl + separator + paramNameValues.join('&');
+	var unc = triggerUrl + separator + paramNameValues.join('&');
+	return unc.replace(/%20/g,'+');
 }
 
 function encryptSignature(unencryptedSignature) {
