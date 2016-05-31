@@ -109,7 +109,7 @@ function validateSignature(body, triggerUrl) {
 	
 	var unencrypted = getUnencryptedSignature(body, triggerUrl);
 	var encrypted = encryptSignature(unencrypted);
-//	console.log('unencrypted signature', unencrypted);
+	console.log('unencrypted signature', unencrypted);
 	console.log('computed signature: '+ encrypted);
 	console.log('trigger signature: '+ body.signature);
 	if(encrypted == body.signature)
