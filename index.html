@@ -1,36 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Google sign in demo</title>
-    <meta name="google-signin-scope" content="profile email">
-    <meta name="google-signin-client_id" content="7640409675-vo4hcd4ggr59sbs2sskn662ohrk3skt8.apps.googleusercontent.com">
+	<title>Boldchat Node.js test script</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<script type="text/javascript" src="/jquery-2.1.3.min.js"></script>
+	<link rel="stylesheet" href="/bootstrap.min.css">
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="/index.js"></script>
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
-<style type="text/css">
-.footer{position: fixed; bottom: 0; height: 80px; background: #f5f5f5; width: 100%;}
-.footer > .container{padding: 15px;}
-</style>
 </head>
 <body>
-<h2><center>Google sign in demo</center></h2>
+<h2><center>Boldchat Node.js test script</center></h2>
+<p></p>
 <div class="wrapper col-xs-12">
-	<div class="col-xs-2">    
-		<div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+	<div class="col-xs-3">
+		<div class='btn btn-primary' onClick='startTest()'>Start Test</div>
 	</div>
-	<div id="g-signout" class="col-xs-4">
-		<img id="gprofile-image" class="img-circle" width="48" height="48" alt="Profile Image">
-		<span id="gname">Name</span>
-		<a href="#" class="btn btn-success" onClick="signOut();">Sign Out</a>
+	<div class="col-xs-3">
+		<div class='btn btn-info' onClick='stopTest()'>End Test</div>
 	</div>
-	<div class="col-xs-4">
-		<p id="error"></p>
+	<div class="col-xs-2">
+		<div class='btn btn-warning' onClick='sleepfor(100)'>sleep 100ms</div>
+	</div>
+	<div class="col-xs-2">
+		<div class='btn btn-warning' onClick='sleepfor(500)'>sleep 500ms</div>
+	</div>
+	<div class="col-xs-2">
+		<div class='btn btn-warning' onClick='sleepfor(1000)'>sleep 1s</div>
 	</div>
 </div>
 <p></p>
-<p id="message"></p>
+	<p class="text-center" id="error"></p>
+	<p class="text-center" id="message1"></p>
+	<p class="text-center" id="message2"></p>
+	<p class="text-center" id="message3"></p>
 </body>
 </html>
