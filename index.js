@@ -19,7 +19,7 @@ $(document).ready(function() {
 	});
 
 	socket.on('testResponse', function(data){
-		$("#message1").text(data);
+		$("#message1").html(data);
 	});
 
 	socket.on('testComplete', function(data){

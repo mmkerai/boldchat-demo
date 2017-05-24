@@ -21,6 +21,7 @@ server.listen(443);
 */
 //********** Get port used by Heroku or use a default
 var port = Number(process.env.PORT || 7979);
+port = 7979;
 var server = http.createServer(app).listen(port);
 var	io = require('socket.io').listen(server);
 
