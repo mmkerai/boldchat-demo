@@ -97,9 +97,6 @@ app.post('/operator-status-changed', function(req, res){
 	res.send({ "result": "success" });
 });
 
-// Set up code for outbound BoldChat API calls.  All of the capture callback code should ideally be packaged as an object.
-eval(fs.readFileSync('hmac-sha512.js')+'');
-
 function BC_API_Request(api_method,params,callBackFunction) {
 	var auth = AID + ':' + SETTINGSID + ':' + (new Date()).getTime();
 	var authHash = auth + ':' + CryptoJS.SHA512(auth + KEY).toString(CryptoJS.enc.Hex);
