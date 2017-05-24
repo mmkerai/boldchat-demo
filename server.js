@@ -49,7 +49,6 @@ catch (e)
 		AID = process.env.AID || 0;
 		SETTINGSID = process.env.APISETTINGSID || 0;
 		KEY = process.env.APIKEY || 0;
-		STARTDAY = JSON.parse(process.env.STARTOFDAY) || {};
 	}
 	else
 		console.log("Error code: "+e.code);
