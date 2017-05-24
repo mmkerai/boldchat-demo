@@ -76,6 +76,46 @@ app.get('/bootstrap.min.css', function(req, res){
 	res.sendFile(__dirname + '/bootstrap.min.css');
 });
 
+// Set up callbacks
+io.sockets.on('connection', function(socket){
+	ThisSocket = socket;
+	
+	socket.on('testAction', function(data)
+	{
+		TimeNow = new Date();
+
+		if(data == "start")
+		{
+			if(TestStatus == 1)		// test already started
+			{
+				socket.emit('errorResponse', "Test already started");				
+			}
+			else
+			{
+				initialiseGlobals();
+				doTest();
+				socket.emit('testResponse',"Started at "+TimeNow);
+			}
+		}
+		else if(data == "stop")
+		{
+			TestStatus = 2;			// complete
+			socket.emit('testResponse',"Stopped at "+TimeNow);
+		}
+		else
+			console.log("Invalid Test Action");
+	});
+
+	socket.on('sleepAction', function(data)
+	{
+		socket.emit('testResponse',"Started at "+new Date().getTime());
+		sleep(data);
+		socket.emit('testComplete',"Stopped at "+new Date().getTime()+" Count: "+EndCount);
+	});	
+});
+
+console.log("Server Started on Port "+port);
+
 //********************************* Global variables for chat data
 var ThisSocket;
 var NoOfRequests;
@@ -204,45 +244,7 @@ function doTest() {
 	setTimeout(doTest,30000);	// run it every 30 seconds
 }
 
-// Set up callbacks
-io.sockets.on('connection', function(socket){
-	ThisSocket = socket;
-	
-	socket.on('testAction', function(data)
-	{
-		TimeNow = new Date();
 
-		if(data == "start")
-		{
-			if(TestStatus == 1)		// test already started
-			{
-				socket.emit('errorResponse', "Test already started");				
-			}
-			else
-			{
-				initialiseGlobals();
-				doTest();
-				socket.emit('testResponse',"Started at "+TimeNow);
-			}
-		}
-		else if(data == "stop")
-		{
-			TestStatus = 2;			// complete
-			socket.emit('testResponse',"Stopped at "+TimeNow);
-		}
-		else
-			console.log("Invalid Test Action");
-	});
-
-	socket.on('sleepAction', function(data)
-	{
-		socket.emit('testResponse',"Started at "+new Date().getTime());
-		sleep(data);
-		socket.emit('testComplete',"Stopped at "+new Date().getTime()+" Count: "+EndCount);
-	});	
-});
-
-console.log("Server Started on Port "+port);
 /*fs.writeFile('reports/helloworld.txt', 'Hello World!', function (err) {
  if (err) return console.log(err);
  console.log('File written');
