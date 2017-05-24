@@ -147,13 +147,14 @@ app.post('/operator-status-changed', function(req, res){
 
 function BC_API_Request(api_method,params,callBackFunction) {
 	var auth = AID + ':' + SETTINGSID + ':' + (new Date()).getTime();
-	var authHash = auth + ':' + CryptoJS.SHA512(auth + KEY).toString(CryptoJS.enc.Hex);
+	var authHash = auth + ':' + crypto.createHash('sha512').update(auth + KEY).digest('hex');
 	var options = {
-		host : 'api.boldchat.com', 
-		port : 443, 
-		path : '/aid/'+AID+'/data/rest/json/v1/'+api_method+'?auth='+authHash+'&'+params, 
-		method : 'GET'
-		};
+		host : 'api-eu.boldchat.com',
+		port : 443,
+		path : '/aid/'+AID+'/data/rest/json/v1/'+api_method+'?auth='+authHash+'&'+params,
+		method : 'GET',
+		agent : false
+	};
 	https.request(options, callBackFunction).end();
 }
 
