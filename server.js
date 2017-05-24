@@ -5,6 +5,7 @@ var http = require('http');
 var https = require('https');
 var app = require('express')();
 var fs = require('fs');
+var crypto = require('crypto');
 var bodyParser = require('body-parser');
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -18,10 +19,9 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 server = https.createServer(options, app);
 server.listen(443);
 */
-server = http.createServer(app);
-var port = 7979;
-server.listen(port);
-
+//********** Get port used by Heroku or use a default
+var PORT = Number(process.env.PORT || 7979);
+var server = http.createServer(app).listen(PORT);
 var	io = require('socket.io').listen(server);
 
 //*********** Get BoldChat API Credentials
